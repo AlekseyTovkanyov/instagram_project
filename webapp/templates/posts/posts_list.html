@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Посты</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="text-center">Посты</h1><br>
+        {% if posts %}
+            <div class="d-flex flex-column align-items-center">
+                {% for post in posts %}
+                    <div class="card mb-4" style="width: 100%; max-width: 600px;">
+                        <img src="{{ post.image.url }}" alt="Post image" class="card-img-top"
+                             style="object-fit: cover; height: 400px;">
+                        <div class="card-body">
+                            <p>{{ post.likes_count }} отметок "Нравится"</p>
+                            <p class="card-text"><a href="#"
+                                                    class="text-dark text-decoration-none">{{ request.user.username }}</a> {{ post.description }}
+                            </p>
+                            <p>Comments: {{ post.comments_count }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center">Посты не найдены</p>
+        {% endif %}
+    </div>
+{% endblock %}

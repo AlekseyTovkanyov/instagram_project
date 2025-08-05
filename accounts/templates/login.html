@@ -3,9 +3,6 @@
     <h1>Вход</h1>
     <form action="" method="post" class="text-center w-25 ms-auto me-auto">
         {% csrf_token %}
-        {% if has_error %}
-            <p class="form-error">Неверное имя пользователя или пароль.</p>
-        {% endif %}
         <div class="form-group">
             <label for="username" class="form-label">Имя пользователя:</label>
             <input class="form-control" type="text" name="username" id="username">
