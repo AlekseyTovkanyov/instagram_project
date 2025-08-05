@@ -13,6 +13,21 @@
                 <h1>{{ user.username }}</h1>
                 <p class="fw-bold">{{ user.first_name }}</p>
                 <p>{{ user.bio }}</p>
+                <p>Подписчиков: {{ user.followers.count }}</p>
+                <p>Подписок: {{ user.following.count }}</p>
+                {% if request.user.is_authenticated and request.user != user %}
+                    <form method="post" action="{% url 'webapp:toggle_subscription' user.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <button type="submit" class="btn btn-primary">
+                            {% if is_following %}
+                                Отписаться
+                            {% else %}
+                                Подписаться
+                            {% endif %}
+                        </button>
+                    </form>
+                {% endif %}
             </div>
         </div>
         <div class="mb-4">

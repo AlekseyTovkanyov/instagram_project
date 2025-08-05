@@ -5,8 +5,9 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView
 
 from accounts.forms.custom_user import CustomUserCreationForm
-from webapp.models import Post
+from webapp.models import Post, Subscription
 
+# Create your views here.
 User = get_user_model()
 
 
@@ -42,4 +43,10 @@ class UserDetailView(DetailView):
             comments_count=Count('posts_comments')
         )
         context['posts'] = posts
+        if self.request.user.is_authenticated:
+            context['is_following'] = Subscription.objects.filter(
+                follower=self.request.user, followed=user
+            ).exists()
+        else:
+            context['is_following'] = False
         return context

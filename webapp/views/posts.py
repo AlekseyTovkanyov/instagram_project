@@ -15,10 +15,14 @@ class PostListView(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self):
-        queryset = super().get_queryset().annotate(
-            likes_count=Count('posts_likes'),
-            comments_count=Count('posts_comments')
-        )
+        if self.request.user.is_authenticated:
+            followed_users = User.objects.filter(followers__follower=self.request.user)
+            queryset = Post.objects.filter(user__in=followed_users).order_by('-created_at').annotate(
+                likes_count=Count('posts_likes'),
+                comments_count=Count('posts_comments')
+            )
+        else:
+            queryset = Post.objects.none()
         return queryset
 
     def get_context_data(self, **kwargs):

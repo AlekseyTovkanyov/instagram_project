@@ -6,12 +6,8 @@
                      style="object-fit: cover; height: 400px;">
                 <div class="card-body">
                     <p>{{ post.likes_count }} отметок "Нравится"</p>
-                    <p class="card-text">
-                        <a href="{% url 'accounts:user_profile' post.user.pk %}"
-                           class="text-dark text-decoration-none">
-                            {{ post.user.username }}
-                        </a>
-                        {{ post.description }}
+                    <p class="card-text"><a href="{% url 'accounts:user_profile' post.user.pk %}"
+                                            class="text-dark text-decoration-none">{{ post.user.username }}</a> {{ post.description }}
                     </p>
                     <p>Comments: {{ post.comments_count }}</p>
                 </div>
