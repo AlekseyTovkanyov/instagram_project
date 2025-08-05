@@ -7,7 +7,7 @@
                      style="object-fit: cover; height: 400px;">
             </a>
             <div class="card-body">
-                <form action="{% url 'webapp:toggle_like' pk=post.id %}" method="post">
+                <form action="{% url 'webapp:toggle_like' pk=post.pk %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ request.get_full_path }}">
                     <button type="submit" class="btn btn-link p-0">
@@ -18,14 +18,31 @@
                         {% endif %}
                     </button>
                 </form>
-                <p>{{ likes_count }} отметок "Нравится"</p>
+                <p>{{ post.likes_count }} отметок "Нравится"</p>
                 <p class="card-text">
-                    <a href="{% url 'webapp:post_detail' pk=post.id %}" class="text-dark text-decoration-none">
+                    <a href="{% url 'webapp:post_detail' pk=post.pk %}" class="text-dark text-decoration-none">
                         {{ post.user.username }}
                     </a> {{ post.description }}
                 </p>
-                <p>Comments: {{ comments_count }}</p>
+                <p>Comments: {{ post.comments_count }}</p>
+                <hr>
+                <form action="{% url 'webapp:post_detail' pk=post.pk %}" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Опубликовать</button>
+                </form>
             </div>
+        </div>
+        <div class="mt-4">
+            <h5>Комментарии</h5>
+            {% for comment in comments %}
+                <div class="comment mb-3">
+                    <p><strong>{{ comment.user.username }}</strong> <small>{{ comment.created_at }}</small></p>
+                    <p>{{ comment.text }}</p>
+                </div>
+            {% empty %}
+                <p>Комментариев нет</p>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

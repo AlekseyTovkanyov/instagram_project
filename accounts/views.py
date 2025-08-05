@@ -5,9 +5,8 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView
 
 from accounts.forms.custom_user import CustomUserCreationForm
-from webapp.models import Post, Subscription
+from webapp.models import Post, Subscription, Like
 
-# Create your views here.
 User = get_user_model()
 
 
@@ -39,8 +38,8 @@ class UserDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         user = self.object
         posts = Post.objects.filter(user=user).annotate(
-            likes_count=Count('posts_likes'),
-            comments_count=Count('posts_comments')
+            likes_count=Count('posts_likes', distinct=True),
+            comments_count=Count('posts_comments', distinct=True)
         )
         context['posts'] = posts
         if self.request.user.is_authenticated:
@@ -49,4 +48,7 @@ class UserDetailView(DetailView):
             ).exists()
         else:
             context['is_following'] = False
+        liked_posts = Like.objects.filter(user=self.request.user).values_list('post_id', flat=True)
+        context['liked_posts'] = liked_posts
         return context
+

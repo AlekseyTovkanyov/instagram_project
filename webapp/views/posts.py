@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, DetailView
+from django.views.generic import CreateView, ListView, DetailView, View
 
+from webapp.forms.comments import CommentForm
 from webapp.models import Post, Like
 from webapp.forms import PostForm
 
@@ -18,8 +20,8 @@ class PostListView(ListView):
         if self.request.user.is_authenticated:
             followed_users = User.objects.filter(followers__follower=self.request.user)
             queryset = Post.objects.filter(user__in=followed_users).order_by('-created_at').annotate(
-                likes_count=Count('posts_likes'),
-                comments_count=Count('posts_comments')
+                likes_count=Count('posts_likes', distinct=True),
+                comments_count=Count('posts_comments', distinct=True)
             )
         else:
             queryset = Post.objects.none()
@@ -41,6 +43,18 @@ class PostListView(ListView):
         return context
 
 
+class PostCommentView(View):
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+        return redirect('webapp:index')
+
+
 class PostCreateView(CreateView):
     model = Post
     form_class = PostForm
@@ -54,18 +68,32 @@ class PostCreateView(CreateView):
 
 class PostDetailView(DetailView):
     model = Post
-    template_name = 'post_detail.html'
+    template_name = 'posts/post_detail.html'
     context_object_name = 'post'
+
+    def get_queryset(self):
+        return Post.objects.annotate(
+            likes_count=Count('posts_likes', distinct=True),
+            comments_count=Count('posts_comments', distinct=True)
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         post = self.object
         user = self.request.user
-        post_with_counts = Post.objects.filter(id=post.id).annotate(
-            likes_count=Count('posts_likes'),
-            comments_count=Count('posts_comments')
-        ).first()
-        context['likes_count'] = post_with_counts.likes_count
-        context['comments_count'] = post_with_counts.comments_count
+        context['likes_count'] = post.likes_count
+        context['comments_count'] = post.comments_count
         context['user_liked'] = Like.objects.filter(user=user, post=post).exists()
+        context['form'] = CommentForm()
+        context['comments'] = post.posts_comments.all().order_by('created_at')
         return context
+
+    def post(self, request, *args, **kwargs):
+        post = self.get_object()
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+        return redirect('webapp:post_detail', pk=post.pk)

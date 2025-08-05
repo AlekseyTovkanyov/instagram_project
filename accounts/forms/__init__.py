@@ -1,1 +1,2 @@
 from accounts.forms.custom_user import CustomUserCreationForm
+from accounts.forms.custom_user_authentication import CustomAuthenticationForm
