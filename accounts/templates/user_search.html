@@ -1,0 +1,26 @@
+{% block title %}
+    <title>Поиск пользователей</title>
+{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="text-center">Поиск пользователей</h1>
+        <form method="get" action="{% url 'accounts:user_search' %}" class="form-inline my-2 my-lg-0">
+            <input type="text" name="query" class="form-control mr-sm-2" placeholder="Поиск..." value="{{ request.GET.query }}">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
+        </form>
+        <br>
+        {% if request.GET.query %}
+            {% if users %}
+                <ul class="list-group">
+                    {% for user in users %}
+                        <li class="list-group-item">
+                            <a href="{% url 'accounts:user_profile' user.id %}">{{ user.username }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center">Пользователи не найдены</p>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

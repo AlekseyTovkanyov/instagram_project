@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import widgets
 
-from webapp.models.base_model import Post
+from webapp.models import Post
 
 
 class PostForm(forms.ModelForm):

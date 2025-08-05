@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}
+    <title>Профиль пользователя {{ user.username }}</title>
+{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="mb-4 d-flex align-items-start">
+            <div class="me-4">
+                <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="img-thumbnail rounded-circle"
+                     style="width: 150px; height: 150px; object-fit: cover;">
+            </div>
+            <div>
+                <h1>{{ user.username }}</h1>
+                <p class="fw-bold">{{ user.first_name }}</p>
+                <p>{{ user.bio }}</p>
+            </div>
+        </div>
+        <div class="mb-4">
+            {% if posts %}
+                <h5 class="text-center">Публикации</h5>
+                <div class="d-flex flex-column align-items-center">
+                    {% include 'partial/posts_list.html' with posts=posts %}
+                </div>
+            {% else %}
+                <p class="text-center">Публикаций нет</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

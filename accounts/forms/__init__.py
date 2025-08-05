@@ -1,0 +1,1 @@
+from accounts.forms.custom_user import CustomUserCreationForm

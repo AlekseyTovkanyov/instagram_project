@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}
+    <title>Посты</title>
+{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="text-center">Посты</h1>
+        <form method="get" action="{% url 'webapp:index' %}" class="row">
+            <div class="col-md-9 pr-0">
+                <input type="text" name="query" class="form-control" placeholder="Поиск пользователей..."
+                       value="{{ request.GET.query }}">
+            </div>
+            <div class="col-md-3 pl-0">
+                <button class="btn btn-outline-success w-100" type="submit">Поиск</button>
+            </div>
+        </form>
+        <br>
+        {% if request.GET.query %}
+            {% if users %}
+                <ul class="list-group">
+                    {% for user in users %}
+                        <li class="list-group-item">
+                            <a href="{% url 'accounts:user_profile' user.id %}">{{ user.username }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center">Пользователи не найдены</p>
+            {% endif %}
+        {% endif %}
+        <br>
+        {% if posts %}
+            {% include 'partial/posts_list.html' %}
+        {% else %}
+            <p class="text-center">Посты не найдены</p>
+        {% endif %}
+    </div>
+{% endblock %}
