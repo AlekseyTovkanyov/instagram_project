@@ -7,7 +7,15 @@ from webapp.models.base_model import BaseModel
 class Post(BaseModel):
     image = models.ImageField(upload_to='posts', verbose_name='Картинка')
     description = models.TextField(verbose_name="Описание")
-    user = models.ForeignKey(get_user_model(), related_name='posts', on_delete=models.SET_DEFAULT, default=1)
+    user = models.ForeignKey(
+        get_user_model(),
+        related_name='posts',
+        on_delete=models.SET_DEFAULT,
+        default=1)
+    like_users = models.ManyToManyField(
+        get_user_model(),
+        related_name="like_posts",
+        verbose_name="Лайки")
 
     def __str__(self):
         return self.description[:50]
