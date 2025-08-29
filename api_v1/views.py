@@ -27,17 +27,11 @@ class PostViewSet(ModelViewSet):
 
 
 class LikeToggleView(APIView):
-    """
-    API для переключения лайка поста.
-    POST /api/v1/posts/{pk}/like/ - поставить/убрать лайк
-    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk, **kwargs):
         post = get_object_or_404(Post, pk=pk)
         user = request.user
-
-        # Переключаем лайк (toggle)
         if user in post.like_users.all():
             post.like_users.remove(user)
             liked = False
